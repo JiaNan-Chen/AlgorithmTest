@@ -1,4 +1,6 @@
 import java.awt.Point;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,13 +52,17 @@ public class Test {
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
 //        System.out.println(isContain(new int[][]{{1, 2, 8, 9}, {2, 4, 9, 12}, {4, 7, 10, 13}, {6, 8, 11, 15}}, 0, 0, 3, 3, 3));
         for (int index = 0; index < 10; index++) {
 //            System.out.print(getFirb1(index) + " ");
 //            System.out.print(getFirb2(index) + " ");
         }
 //        System.out.print(getMax(8));
+        InetAddress inetAddress=InetAddress.getByName("baidu.com");
+        System.out.println(Arrays.toString(inetAddress.getAllByName("baidu.com")));
+        int c='啊';
+        System.out.println(c);
         System.out.print(new Solution().movingCount(1, 2, 3));
         //5,10,10
         System.out.print(new Solution().movingCount(15, 20, 20));
@@ -129,6 +135,236 @@ public class Test {
         System.out.println(new Solution33().NumberOf1Between1AndN_Solution(10));
         System.out.println(new Solution34().PrintMinNumber(new int[]{3, 32, 321}));
         System.out.println(new Solution36().InversePairs(new int[]{1, 2, 3, 4, 5, 6, 7, 0}));
+    }
+
+    //把只包含质因子2、3和5的数称作丑数（Ugly Number）。
+    //例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
+    public class Solution43 {
+        public int GetUglyNumber_Solution(int index) {
+            if(index<=0){
+                return 0;
+            }
+            if(index==1){
+                return 1;
+            }
+            int index2=0;
+            int index3=0;
+            int index5=0;
+            int[] result=new int[index];
+            result[0]=1;
+            for(int i=1;i<index;i++){
+                int result2=result[index2]*2;
+                int result3=result[index3]*3;
+                int result5=result[index5]*5;
+                result[i]=Math.min(Math.min(result2, result3),result5);
+                if(result2<=result[i]){
+                    index2++;
+                }
+                if(result3<=result[i]){
+                    index3++;
+                }
+                if(result5<=result[i]){
+                    index5++;
+                }
+            }
+            return result[index-1];
+        }
+    }
+
+    //输入一棵二叉树，求该树的深度。从根结点到叶结点依次经过的结点（含根、叶结点）形成树的一条路径，最长路径的长度为树的深度。
+    public class Solution42 {
+        public int TreeDepth(TreeNode root) {
+            if(root==null){
+                return 0;
+            }
+            int depth=0;
+            ArrayList<TreeNode>top=new ArrayList();
+            ArrayList<TreeNode>bottom=new ArrayList();
+            top.add(root);
+            while(!top.isEmpty()){
+                while(!top.isEmpty()){
+                    TreeNode cur=top.remove(0);
+                    if(cur.left!=null){
+                        bottom.add(cur.left);
+                    }
+                    if(cur.right!=null){
+                        bottom.add(cur.right);
+                    }
+                }
+                top.addAll(bottom);
+                bottom.clear();
+                depth++;
+            }
+            return depth;
+        }
+    }
+
+
+    //描述
+    //输入一棵二叉树，判断该二叉树是否是平衡二叉树。
+    //在这里，我们只需要考虑其平衡性，不需要考虑其是不是排序二叉树
+    //平衡二叉树（Balanced Binary Tree），具有以下性质：它是一棵空树或它的左右两个子树的高度差的绝对值不超过1，并且左右两个子树都是一棵平衡二叉树。
+    //
+    //注：我们约定空树是平衡二叉树。
+    public class Solution41 {
+        public boolean IsBalanced_Solution(TreeNode root) {
+            if(root==null){
+                return true;
+            }
+            if(Math.abs(getDepth(root.left)-getDepth(root.right))>1){
+                return false;
+            }
+            return IsBalanced_Solution(root.left)&&IsBalanced_Solution(root.right);
+        }
+
+        private int getDepth(TreeNode node){
+            if(node==null){
+                return 0;
+            }
+            if(node.left==null&&node.right==null){
+                return 1;
+            }
+            return 1+Math.max(getDepth(node.left),getDepth(node.right));
+        }
+    }
+
+    //描述
+    //小明很喜欢数学,有一天他在做数学作业时,要求计算出9~16的和,他马上就写出了正确答案是100。但是他并不满足于此,他在想究竟有多少种连续的正数序列的和为100(至少包括两个数)。没多久,他就得到另一组连续正数和为100的序列:18,19,20,21,22。现在把问题交给你,你能不能也很快的找出所有和为S的连续正数序列? Good Luck!
+    //返回值描述：
+    //输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序
+    //示例1
+    //输入：
+    //9
+    //复制
+    //返回值：
+    //[[2,3,4],[4,5]]
+    public class Solution40 {
+        public ArrayList<ArrayList<Integer> > FindContinuousSequence(int sum) {
+            ArrayList<ArrayList<Integer>>result=new ArrayList();
+            int left=1;
+            int right=2;
+            int localSum=left+right;
+            while(right<sum&&left<right){
+                if(localSum==sum){
+                    ArrayList<Integer>temp=new ArrayList();
+                    for(int index=left;index<=right;index++){
+                        temp.add(index);
+                    }
+                    result.add(temp);
+                }
+                if(localSum<sum){
+                    right++;
+                    localSum+=right;
+                }else{
+                    localSum-=left;
+                    left++;
+                }
+            }
+            return result;
+        }
+    }
+
+    //汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。
+    // 对于一个给定的字符序列 S，请你把其循环左移 K 位后的序列输出（保证 K 小于等于 S 的长度）。例如，字符序列S=”abcXYZdef”,要求输出循环左移 3 位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
+    //示例1
+    //输入：
+    //"abcXYZdef",3
+    //复制
+    //返回值：
+    //"XYZdefabc"
+
+    //现在有2副扑克牌，从扑克牌中随机五张扑克牌，我们需要来判断一下是不是顺子。
+    //有如下规则：
+    //1. A为1，J为11，Q为12，K为13，A不能视为14
+    //2. 大、小王为 0，0可以看作任意牌
+    //3. 如果给出的五张牌能组成顺子（即这五张牌是连续的）就输出true，否则就输出false。
+    //例如：给出数据[6,0,2,0,4]
+    //中间的两个0一个看作3，一个看作5 。即：[6,3,2,5,4]
+    //这样这五张牌在[2,6]区间连续，输出true
+    //数据保证每组5个数字，每组最多含有4个零，数组的数取值为 [0, 13]
+    public class Solution39 {
+        public boolean IsContinuous(int[] numbers) {
+            int zeroIndex = -1;
+            for (int index = 0; index < numbers.length; index++) {
+                if (numbers[index] == 0) {
+                    zeroIndex = index;
+                    break;
+                }
+            }
+            if (zeroIndex == -1) {
+                int min=numbers[0];
+                for(int index=1;index<numbers.length;index++){
+                    if(numbers[index]<min){
+                        min=numbers[index];
+                    }
+                }
+                for(int index=1;index<numbers.length;index++){
+                    if(!contains(numbers,min+index)){
+                        return false;
+                    }
+                }
+//                System.out.println(Arrays.toString(numbers));
+                return true;
+            } else {
+                for (int index = 1; index < 14; index++) {
+                    numbers[zeroIndex] = index;
+                    if (IsContinuous(numbers)) {
+                        numbers[zeroIndex] = 0;
+                        return true;
+                    }
+                }
+                numbers[zeroIndex] = 0;
+                return false;
+            }
+        }
+
+        private boolean contains(int[] numbers, int i) {
+            for (int index=0;index<numbers.length;index++){
+                if(numbers[index]==i){
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    //每年六一儿童节,牛客都会准备一些小礼物去看望孤儿院的小朋友,今年亦是如此。
+    // HF作为牛客的资深元老,自然也准备了一些小游戏。其中,有个游戏是这样的:首先,让小朋友们围成一个大圈。
+    // 然后,他随机指定一个数m,让编号为0的小朋友开始报数。每次喊到m-1的那个小朋友要出列唱首歌,然后可以在礼品箱中任意的挑选礼物,并且不再回到圈中,从他的下一个小朋友开始,继续0...m-1报数....这样下去....直到剩下最后一个小朋友,可以不用表演,并且拿到牛客名贵的“名侦探柯南”典藏版(名额有限哦!!^_^)。请你试着想下,哪个小朋友会得到这份礼品呢？(注：小朋友的编号是从0到n-1)
+    //
+    //如果没有小朋友，请返回-1
+    public class Solution38 {
+        public int LastRemaining_Solution(int n, int m) {
+            if(n<=0||m<0){
+                return -1;
+            }
+            ArrayList<Integer> res=new ArrayList();
+            for(int index=0;index<n;index++){
+                res.add(index);
+            }
+            int recordIndex=0;
+            int childCount=n;
+            while(childCount>1){
+                int temp=(recordIndex+m-1)%childCount;
+                res.remove(temp);
+                childCount--;
+                recordIndex=temp%childCount;
+            }
+            return res.get(0);
+        }
+    }
+
+    public class Solution37 {
+        public int Add(int num1, int num2) {
+            //num1看作无进位和
+            //num2看作进位
+            while (num2 != 0) {
+                int temp = num1 ^ num2;
+                num2 = (num1 & num2) << 1;
+                num1 = temp;
+            }
+            return num1;
+        }
     }
 
     //描述
@@ -1262,9 +1498,6 @@ public class Test {
             for (int index = 0; index < length; index++) {
                 if (str.charAt(index) == ' ') {
                     spaceCount++;
-//                    if (right == length - 1) {
-//                        right = index;
-//                    }
                     right = length - index - 2;
                 }
                 temp[length - 1 - index] = str.charAt(index);
@@ -1840,7 +2073,7 @@ public class Test {
         f[2] = 2;
         for (int index = 3; index < num + 1; index++) {
             f[index] = index;
-            for (int inner = 2; inner <= index / 2; inner++) {
+            for (int inner = 1; inner <= index / 2; inner++) {
                 f[index] = Math.max(f[index], f[inner] * f[index - inner]);
             }
         }
